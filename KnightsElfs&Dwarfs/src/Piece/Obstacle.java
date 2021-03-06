@@ -6,7 +6,7 @@ public class Obstacle extends Figure {
     public static final int TILE_SIZE = 50;
 
     public Obstacle(int row, int col, int id) {
-        super(row, col, id);
+        super(row, col, id, 0 ,0 ,0 ,0);
     }
 
     public void render(Graphics g) {
