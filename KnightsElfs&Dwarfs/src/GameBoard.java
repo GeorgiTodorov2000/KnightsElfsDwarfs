@@ -131,7 +131,7 @@ public class GameBoard extends JFrame implements MouseListener {
     }
 
     private void pieceCreator () {
-        Scanner in = new Scanner(System.in);
+//        Scanner in = new Scanner(System.in);
 
 //        for(int pieceCount = 0; pieceCount < 13; pieceCount++) {
 //            if (pieceCount < 2) {
@@ -197,19 +197,7 @@ public class GameBoard extends JFrame implements MouseListener {
         int finalHealth = health - (figure.getAttack() - defence);
         if(finalHealth <= 0) {
             this.pieceCollection[row][col] = null;
-            if (attacked.getId() > 20) {
-                p2FigureCount--;
-                if(p2FigureCount == 0) {
-                    System.out.println("Player 2 lost");
-                    System.exit(1);
-                }
-            } else {
-                p1FigureCount--;
-                if(p1FigureCount == 0) {
-                    System.out.println("Player 1 lost");
-                    System.exit(1);
-                }
-            }
+            lost(attacked);
             System.out.println("Enemy figure died");
         } else {
             this.pieceCollection[row][col] = this.attackPiece;
@@ -217,6 +205,22 @@ public class GameBoard extends JFrame implements MouseListener {
             attacked.setHealth(finalHealth);
         }
         return false;
+    }
+
+    private void lost(Figure attacked) {
+        if (attacked.getId() > 20) {
+            p2FigureCount--;
+            if(p2FigureCount == 0) {
+                System.out.println("Player 2 lost");
+                System.exit(1);
+            }
+        } else {
+            p1FigureCount--;
+            if(p1FigureCount == 0) {
+                System.out.println("Player 1 lost");
+                System.exit(1);
+            }
+        }
     }
 
     public void heal(Figure figure) {
