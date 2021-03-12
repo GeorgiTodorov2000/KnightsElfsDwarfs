@@ -18,6 +18,8 @@ public class GameBoard extends JFrame implements MouseListener {
     private int TURN_COUNTER = 1;
     private Object trap;
     private int OBSTACLE_CLICK_COUNT = 0;
+    private int p1FigureCount = 6;
+    private int p2FigureCount = 6;
 
     JLabel l1 = null;
 
@@ -172,12 +174,12 @@ public class GameBoard extends JFrame implements MouseListener {
         this.pieceCollection[7][5] = new Elf(7,5,21, 5, 10, 1, 3);
         this.pieceCollection[7][7] = new Dwarf(7,7, 22,6, 12, 2, 2);
         this.pieceCollection[7][9] = new Knight(7,9,23, 8 , 15, 3, 1);
-        this.pieceCollection[2][3] = new Elf(2,3,11, 5, 10, 1, 3);
-        this.pieceCollection[2][5] = new Dwarf(2,5, 12,6, 12, 2, 2);
-        this.pieceCollection[2][6] = new Knight(2,6,13, 8 , 15, 3, 1);
-        this.pieceCollection[6][1] = new Elf(6,1,21, 5, 10, 1, 3);
-        this.pieceCollection[6][3] = new Dwarf(6,3, 22,6, 12, 2, 2);
-        this.pieceCollection[6][5] = new Knight(6,5,23, 8 , 15, 3, 1);
+        this.pieceCollection[2][3] = new Elf(2,3,14, 5, 10, 1, 3);
+        this.pieceCollection[2][5] = new Dwarf(2,5, 15,6, 12, 2, 2);
+        this.pieceCollection[2][6] = new Knight(2,6,16, 8 , 15, 3, 1);
+        this.pieceCollection[6][1] = new Elf(6,1,24, 5, 10, 1, 3);
+        this.pieceCollection[6][3] = new Dwarf(6,3, 25,6, 12, 2, 2);
+        this.pieceCollection[6][5] = new Knight(6,5,26, 8 , 15, 3, 1);
     }
 
     private boolean isTileEmpty(int row, int col) {
@@ -195,6 +197,19 @@ public class GameBoard extends JFrame implements MouseListener {
         int finalHealth = health - (figure.getAttack() - defence);
         if(finalHealth <= 0) {
             this.pieceCollection[row][col] = null;
+            if (attacked.getId() > 20) {
+                p2FigureCount--;
+                if(p2FigureCount == 0) {
+                    System.out.println("Player 2 lost");
+                    System.exit(1);
+                }
+            } else {
+                p1FigureCount--;
+                if(p1FigureCount == 0) {
+                    System.out.println("Player 1 lost");
+                    System.exit(1);
+                }
+            }
             System.out.println("Enemy figure died");
         } else {
             this.pieceCollection[row][col] = this.attackPiece;
@@ -204,7 +219,7 @@ public class GameBoard extends JFrame implements MouseListener {
         return false;
     }
 
-    public boolean heal(Figure figure) {
+    public void heal(Figure figure) {
 
         int healing = RANDOM.nextInt(6);
         ++healing;
@@ -214,29 +229,28 @@ public class GameBoard extends JFrame implements MouseListener {
             TURN_COUNTER++;
         }
         System.out.println(healing);
-        return true;
     }
 
-    private boolean moveFigure(int row, int col, Figure figure) {
-        if(isThatFigureYours() == 1) {
-            if(isTileEmpty(row, col)) {
-                if (figure.isMoveValid(row, col) == 1) {
-
-                    int initialRow = figure.getRow();
-                    int initialCol = figure.getCol();
-
-                    figure.move(row, col);
-
-                    this.pieceCollection[initialRow][initialCol] = null;
-                    this.pieceCollection[row][col] = this.selectedPiece;
-                    System.out.println(this.pieceCollection[row][col]);
-                }
-
-
-            }
-        }
-        return false;
-    }
+//    private boolean moveFigure(int row, int col, Figure figure) {
+//        if(isThatFigureYours() == 1) {
+//            if(isTileEmpty(row, col)) {
+//                if (figure.isMoveValid(row, col) == 1) {
+//
+//                    int initialRow = figure.getRow();
+//                    int initialCol = figure.getCol();
+//
+//                    figure.move(row, col);
+//
+//                    this.pieceCollection[initialRow][initialCol] = null;
+//                    this.pieceCollection[row][col] = this.selectedPiece;
+//                    System.out.println(this.pieceCollection[row][col]);
+//                }
+//
+//
+//            }
+//        }
+//        return false;
+//    }
 
     public int isThatFigureYours() {
         Figure figure = (Figure) this.selectedPiece;
@@ -265,7 +279,7 @@ public class GameBoard extends JFrame implements MouseListener {
         int col = this.getBoardDimensionBasedOnCoordinates(e.getX());
 
         if(this.selectedPiece != null) {
-            System.out.println("Figure selected, click button");
+
             Figure figure = (Figure) this.selectedPiece;
             if (this.hasBoardPiece(row, col)) {
                 this.attackPiece = this.getBoardPiece(row, col);
@@ -275,7 +289,6 @@ public class GameBoard extends JFrame implements MouseListener {
             if (isThatFigureYours() == 1) {
                 if (figure.isMoveValid(row, col) == 1) {
 
-                    //TODO if button click return 1 otherwise it cant keep going
                     int initialRow = figure.getRow();
                     int initialCol = figure.getCol();
                     if (isTileEmpty(row, col)) {
@@ -299,7 +312,17 @@ public class GameBoard extends JFrame implements MouseListener {
                             return;
                         }
                     }  else{
-                        attack(row, col,figure,attacked);
+                        if (figure.getId() < 20 && attacked.getId() > 20) {
+                            attack(row, col, figure, attacked);
+                        }
+                        else if (figure.getId() > 20 && attacked.getId() < 20) {
+
+                            attack(row, col, figure, attacked);
+                        }
+                        else {
+                            System.out.println("You can't attack your own figure");
+                            return;
+                        }
                     }
 
             } else if(figure.getCol() == col && figure.getRow() == row) {
