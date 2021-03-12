@@ -47,6 +47,10 @@ public class Figure {
         return armor;
     }
 
+    public String getString() {
+        return string;
+    }
+
     public int getRangeAndSpeed() {
         return rangeAndSpeed;
     }

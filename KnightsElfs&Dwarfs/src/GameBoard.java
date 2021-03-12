@@ -2,11 +2,11 @@ import Piece.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Random;
+import java.util.Scanner;
 
 public class GameBoard extends JFrame implements MouseListener {
     public static final int TILE_X_COUNT = 9;
@@ -17,11 +17,8 @@ public class GameBoard extends JFrame implements MouseListener {
     private Random RANDOM = new Random();
     private int TURN_COUNTER = 1;
     private Object trap;
-    private int F_ROW = 0;
-    private int F_COL = 0;
-    private int S_COL = 0;
-    private int S_ROW = 0;
-    public Figure figure;
+    private int OBSTACLE_CLICK_COUNT = 0;
+
     JLabel l1 = null;
 
     public GameBoard() {
@@ -30,7 +27,7 @@ public class GameBoard extends JFrame implements MouseListener {
 
         createObstacles();
         pieceCreator();
-        sideMenu();
+
 
 
         this.setSize(750, 450);
@@ -39,21 +36,32 @@ public class GameBoard extends JFrame implements MouseListener {
         this.addMouseListener(this);
     }
 
-    public void sideMenu() {
+    public void sideMenu(Figure figure) {
         if(l1 != null) {
             this.remove(l1);
         }
         String currentTurn;
         if(playerTurn() == 1) {
-            currentTurn = "Player 1";
-        } else {
             currentTurn = "Player 2";
+        } else {
+            currentTurn = "Player 1";
         }
         l1=new JLabel(currentTurn);
         l1.setBounds(544,20, 100,30);
         JButton attack=new JButton("ATTACK!");
         JButton move=new JButton("Move");
         JButton heal=new JButton("Heal");
+
+//        attack.addActionListener(e ->
+//        {
+//            attack(row,col);
+//        });
+        heal.addActionListener(e -> {
+            heal(figure);
+        });
+//        move.addActionListener(e -> {
+//            moveFigure(row, col, figure);
+//        });
 
         attack.setBounds(520,50,95,30);
         move.setBounds(520,100,95,30);
@@ -64,38 +72,16 @@ public class GameBoard extends JFrame implements MouseListener {
         this.setVisible(true);
     }
 
-//    private int buttonAttack(int row, int col, Figure figure) {
+//    private int buttonAttack(
+//            int row, int col, Figure figure
+//    ) {
 //        JButton attack=new JButton("ATTACK!");
 //
 //        attack.setBounds(520,50,95,30);
-//        attack.addActionListener(e ->
-//        {
-//            attack(row,col);
-//        });
+//
 //        return 1;
 //    }
-//
-//    public void buttonHeal(int fRow, int fCol, Figure figure) {
-//
-//        JButton heal=new JButton("Heal");
-//        heal.setBounds(520,150,95,30);
-//
-//        heal.addActionListener(e -> {
-//            heal(fRow, fCol, figure);
-//        });
-//
-//    }
-//
-//    public void buttonMove(int fRow, int fCol, Figure figure) {
-//        JButton move=new JButton("Move");
-//
-//
-//
-//        move.setBounds(520,100,95,30);
-//        move.addActionListener(e -> {
-//            moveFigure(fRow, fCol, figure);
-//        });
-//    }
+
 
 
 
@@ -143,77 +129,114 @@ public class GameBoard extends JFrame implements MouseListener {
     }
 
     private void pieceCreator () {
+        Scanner in = new Scanner(System.in);
+
+//        for(int pieceCount = 0; pieceCount < 13; pieceCount++) {
+//            if (pieceCount < 2) {
+//                System.out.println("Coordinates X for Elf Player 1");
+//                int x = in.nextInt();
+//                System.out.println("Coordinates Y for Elf Player 1");
+//                int y = in.nextInt();
+//            } else if (pieceCount < 4){
+//                System.out.println("Coordinates X for Dwarf Player 1");
+//                int x = in.nextInt();
+//                System.out.println("Coordinates Y for Dwarf Player 1");
+//                int y = in.nextInt();
+//            } else if (pieceCount < 6) {
+//                System.out.println("Coordinates X for Knight Player 1");
+//                int x = in.nextInt();
+//                System.out.println("Coordinates Y for Knight Player 1");
+//                int y = in.nextInt();
+//            } else if (pieceCount < 8) {
+//                System.out.println("Coordinates X for Elf Player 2");
+//                int x = in.nextInt();
+//                System.out.println("Coordinates Y for Elf Player 2");
+//                int y = in.nextInt();
+//            } else if (pieceCount < 10){
+//                System.out.println("Coordinates X for Dwarf Player 2");
+//                int x = in.nextInt();
+//                System.out.println("Coordinates Y for Dwarf Player 2");
+//                int y = in.nextInt();
+//            } else if (pieceCount < 12) {
+//                System.out.println("Coordinates X for Knight Player 2");
+//                int x = in.nextInt();
+//                System.out.println("Coordinates Y for Knight Player 2");
+//                int y = in.nextInt();
+//            }
+//        }
+
+
         this.pieceCollection[1][1] = new Elf(1,1,11, 5, 10, 1, 3);
         this.pieceCollection[1][3] = new Dwarf(1,3, 12,6, 12, 2, 2);
         this.pieceCollection[1][5] = new Knight(1,5,13, 8 , 15, 3, 1);
         this.pieceCollection[7][5] = new Elf(7,5,21, 5, 10, 1, 3);
         this.pieceCollection[7][7] = new Dwarf(7,7, 22,6, 12, 2, 2);
         this.pieceCollection[7][9] = new Knight(7,9,23, 8 , 15, 3, 1);
+        this.pieceCollection[2][3] = new Elf(2,3,11, 5, 10, 1, 3);
+        this.pieceCollection[2][5] = new Dwarf(2,5, 12,6, 12, 2, 2);
+        this.pieceCollection[2][6] = new Knight(2,6,13, 8 , 15, 3, 1);
+        this.pieceCollection[6][1] = new Elf(6,1,21, 5, 10, 1, 3);
+        this.pieceCollection[6][3] = new Dwarf(6,3, 22,6, 12, 2, 2);
+        this.pieceCollection[6][5] = new Knight(6,5,23, 8 , 15, 3, 1);
     }
 
     private boolean isTileEmpty(int row, int col) {
-        if(this.pieceCollection[row][col] != null) {
+        return this.pieceCollection[row][col] == null;
+    }
 
-            return false;
+
+
+
+    public boolean attack (int row, int col, Figure figure, Figure attacked) {
+        this.pieceCollection[row][col] = this.attackPiece;
+
+        int defence = attacked.getArmor();
+        int health = attacked.getHealth();
+        int finalHealth = health - (figure.getAttack() - defence);
+        if(finalHealth <= 0) {
+            this.pieceCollection[row][col] = null;
+            System.out.println("Enemy figure died");
+        } else {
+            this.pieceCollection[row][col] = this.attackPiece;
+            System.out.println("Enemy figure survived with hp: " + finalHealth);
+            attacked.setHealth(finalHealth);
         }
+        return false;
+    }
+
+    public boolean heal(Figure figure) {
+
+        int healing = RANDOM.nextInt(6);
+        ++healing;
+
+        figure.setHealth(figure.getHealth()+healing);
+        if (healing % 2 != 1) {
+            TURN_COUNTER++;
+        }
+        System.out.println(healing);
         return true;
     }
 
-    public void attack(int row, int col) {
-        System.out.println("ATTACK!!!");
+    private boolean moveFigure(int row, int col, Figure figure) {
+        if(isThatFigureYours() == 1) {
+            if(isTileEmpty(row, col)) {
+                if (figure.isMoveValid(row, col) == 1) {
 
-        figure.setHealth(secondFigure(row, col));
-        System.out.println(secondFigure(row, col));
+                    int initialRow = figure.getRow();
+                    int initialCol = figure.getCol();
+
+                    figure.move(row, col);
+
+                    this.pieceCollection[initialRow][initialCol] = null;
+                    this.pieceCollection[row][col] = this.selectedPiece;
+                    System.out.println(this.pieceCollection[row][col]);
+                }
 
 
+            }
+        }
+        return false;
     }
-
-    public int firstFigure () {
-        this.pieceCollection[figure.getRow()][figure.getCol()] = this.selectedPiece;
-        figure = (Figure) this.selectedPiece;
-        int attack = figure.getAttack();
-        return attack;
-    }
-    public int secondFigure (int row, int col) {
-        this.pieceCollection[row][col] = this.attackPiece;
-        figure = (Figure) this.attackPiece;
-        int defence = figure.getArmor();
-        int health = figure.getHealth();
-        int healthAfterAttack = health - (firstFigure() - defence);
-        return healthAfterAttack;
-    }
-//
-//    public void heal(int row, int col, Figure figure) {
-//
-//        int healing = RANDOM.nextInt(6);
-//        ++healing;
-//        //TODO Figures shouldn't be able to heal above max health
-//        figure.setHealth(figure.getHealth()+healing);
-//        if (healing % 2 == 1) {
-//            //TODO Doesn't change player turn
-//        }
-//        System.out.println(healing);
-//    }
-//
-//    private void moveFigure(int row, int col, Figure figure) {
-//        if(isThatFigureYours() == 1) {
-//            if(isTileEmpty(row, col)) {
-//                if (figure.isMoveValid(row, col) == 1) {
-//
-//                    int initialRow = figure.getRow();
-//                    int initialCol = figure.getCol();
-//
-//                    figure.move(row, col);
-//
-//                    this.pieceCollection[initialRow][initialCol] = null;
-//                    this.pieceCollection[row][col] = this.selectedPiece;
-//                    System.out.println(this.pieceCollection[row][col]);
-//                }
-//
-//
-//            }
-//        }
-//    }
 
     public int isThatFigureYours() {
         Figure figure = (Figure) this.selectedPiece;
@@ -227,6 +250,14 @@ public class GameBoard extends JFrame implements MouseListener {
         return 1;
     }
 
+    private boolean isTileObstacle(int row, int col) {
+
+        Figure figure = (Figure) this.pieceCollection[row][col];
+        return figure.getId() == 4;
+    }
+
+
+
     public void mouseClicked(MouseEvent e) {
 
 
@@ -234,40 +265,54 @@ public class GameBoard extends JFrame implements MouseListener {
         int col = this.getBoardDimensionBasedOnCoordinates(e.getX());
 
         if(this.selectedPiece != null) {
-            figure = (Figure) this.selectedPiece;
+            System.out.println("Figure selected, click button");
+            Figure figure = (Figure) this.selectedPiece;
+            if (this.hasBoardPiece(row, col)) {
+                this.attackPiece = this.getBoardPiece(row, col);
+            }
+            Figure attacked = (Figure) this.attackPiece;
+
+            if (isThatFigureYours() == 1) {
                 if (figure.isMoveValid(row, col) == 1) {
 
-                    //TODO is button click return 1 otherwise it cant keep going
+                    //TODO if button click return 1 otherwise it cant keep going
                     int initialRow = figure.getRow();
                     int initialCol = figure.getCol();
-                    if(isTileEmpty(row, col)) {
+                    if (isTileEmpty(row, col)) {
 
 
                         figure.move(row, col);
 
                         this.pieceCollection[initialRow][initialCol] = null;
                         this.pieceCollection[row][col] = this.selectedPiece;
-                    } else if (figure.getId() == 4) {
+                    } else if (isTileObstacle(row, col)) {
+                        System.out.println("This is obstacle, if clicked again it will be destroyed!");
+                        if (OBSTACLE_CLICK_COUNT % 2 == 1) {
+                            figure = (Figure) this.pieceCollection[initialRow][initialCol];
+                            figure.move(initialRow, initialCol);
+                            this.pieceCollection[initialRow][initialCol] = null;
+                            this.pieceCollection[row][col] = this.selectedPiece;
 
-                        trap = pieceCollection[row][col];
-                        figure = (Figure) trap;
-
-                        this.pieceCollection[initialRow][initialCol] = null;
-                        this.pieceCollection[row][col] = this.selectedPiece;
-                        figure.move(row, col);
-                        System.out.println("Trap was destroyed");
-
-                    } else {
-                        attack(row, col);
+                            System.out.println("Trap was destroyed");
+                        } else {
+                            OBSTACLE_CLICK_COUNT++;
+                            return;
+                        }
+                    }  else{
+                        attack(row, col,figure,attacked);
                     }
-                    TURN_COUNTER++;
-                    sideMenu();
-                }
 
+            } else if(figure.getCol() == col && figure.getRow() == row) {
+                    heal(figure);
+
+                }
+                TURN_COUNTER++;
+                sideMenu(figure);
+                this.attackPiece = null;
             this.selectedPiece = null;
             repaint();
            return;
-        }
+        }}
 
         if (this.hasBoardPiece(row, col)) {
             this.selectedPiece = this.getBoardPiece(row, col);
